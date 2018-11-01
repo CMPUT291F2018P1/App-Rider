@@ -1,0 +1,27 @@
+Login Screen
+
+The first screen of your system should provide options for members to login
+and for new members to register. Existing members should be able to login
+using a valid email and password, denoted with email and pwd in table
+members. Proper messages should be given if the provided email is not
+unique.
+
+Members should be able to logout and there must be also an option to exit
+the program.
+
+GUI Requirements:
+1. Exit Button
+2. Login field
+3. Password field
+4. Button to create register screen
+5. Button to confirm login (check Username and password)
+    - Then move to Main screen
+6. Text telling user what to do
+
+
+After a login, all unseen messages of the member will be displayed,
+and the status of the messages will be set to seen (i.e, the seen column is
+set to 'y'). Unregistered members should be able to sign up by providing a
+unique email, a name, a phone, and a password. After a successful login or
+signup, members should be able to perform the subsequent operations
+(possibly chosen from a menu) as discussed next.
