@@ -58,16 +58,12 @@ class App(Frame):
         self.quit.pack()
         return
 
-
-
     def print_unContents(self, event):
-        print("hi. contents of entry is now ---->",
-              self.unContent.get())
+        print(self.unContent.get())
         return
 
     def print_pwdContents(self, event):
-        print("hi. contents of entry is now ---->",
-              self.pwdContent.get())
+        print(self.pwdContent.get())
         return
 
 
