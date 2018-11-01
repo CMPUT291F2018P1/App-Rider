@@ -4,9 +4,9 @@ class App(Frame):
     def __init__(self, master=None):
         super().__init__(master)
         self.pack()
-        self.create_widgets()
+        self.create_initWidgets()
 
-    def create_widgets(self):
+    def create_initWidgets(self):
         self.create_quit()
         self.create_unField()
         self.create_pwdField()
@@ -65,6 +65,15 @@ class App(Frame):
 
     def registerScreen(self):
         print("Register button works")
+        self.unEntry.destroy()
+        self.pwdEntry.destroy()
+        self.cButton.destroy()
+        self.rButton.destroy()
+        self.create_rScreen()
+        return
+
+    def create_rScreen(self):
+        print("Function call works, te be implemented")
         return
 
 def checkInfo():
@@ -76,4 +85,5 @@ root = Tk()
 app = App(master=root)
 app.master.title("My Do-Nothing Application")
 app.master.maxsize(1000, 400)
+app.master.minsize(1000, 400)
 app.mainloop()
