@@ -1,0 +1,8 @@
+Best Documentation I have found
+https://www.tcl.tk/man/tcl8.6/TkCmd/entry.htm
+Decent documentation, over view of how it works
+https://docs.python.org/3/library/tkinter.html#tkinter-modules
+Another reference source
+http://effbot.org/tkinterbook/
+Some uses of entry
+http://effbot.org/tkinterbook/entry.htm
