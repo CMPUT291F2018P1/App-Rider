@@ -1,13 +1,4 @@
 from tkinter import *
-# from tkinter import tkk
-# tkinter._test()
-
-
-# root = Tk()
-# content = Frame(root)
-# button = Button(content)
-
-# import tkinter as tk
 
 class App(Frame):
     def __init__(self, master=None):
@@ -19,6 +10,8 @@ class App(Frame):
         self.create_quit()
         self.create_unField()
         self.create_pwdField()
+        self.create_confirm()
+        self.create_register()
         return
 
     def create_unField(self):
@@ -31,10 +24,6 @@ class App(Frame):
         self.unContent.set("Username")
         # tell the entry widget to watch this variable
         self.unEntry["textvariable"] = self.unContent
-        # and here we get a callback when the user hits return.
-        # we will have the program print out the value of the
-        # application variable when the user hits return
-        self.unEntry.bind('<Key-Return>', self.print_unContents)
         return
 
     def create_pwdField(self):
@@ -47,15 +36,23 @@ class App(Frame):
         self.pwdContent.set("Password")
         # tell the entry widget to watch this variable
         self.pwdEntry["textvariable"] = self.pwdContent
-        # and here we get a callback when the user hits return.
-        # we will have the program print out the value of the
-        # application variable when the user hits return
-        self.pwdEntry.bind('<Key-Return>', self.print_pwdContents)
+        return
 
     def create_quit(self):
         self.quit = Button(self, text="QUIT", fg="red",
                               command=root.destroy)
-        self.quit.pack()
+        self.quit.pack(side=RIGHT)
+        return
+
+    def create_confirm(self):
+        self.cButton = Button(self, text="Login", command=checkInfo)
+        self.cButton.pack(side=RIGHT)
+        return
+
+    def create_register(self):
+        self.rButton = Button(self, text="Click to Register",
+            command=self.registerScreen)
+        self.rButton.pack(side=RIGHT)
         return
 
     def print_unContents(self, event):
@@ -66,6 +63,14 @@ class App(Frame):
         print(self.pwdContent.get())
         return
 
+    def registerScreen(self):
+        print("Register button works")
+        return
+
+def checkInfo():
+    print("Print statement demonstrates how to grab un and pwd")
+    print(app.unContent.get(), app.pwdContent.get())
+    return
 
 root = Tk()
 app = App(master=root)

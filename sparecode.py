@@ -21,3 +21,8 @@
 #
 #     def say_hi(self):
 #         print("hi there, everyone!")
+
+        # and here we get a callback when the user hits return.
+        # we will have the program print out the value of the
+        # application variable when the user hits return
+        # self.pwdEntry.bind('<Key-Return>', self.print_pwdContents)
