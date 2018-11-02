@@ -1,5 +1,5 @@
 from tkinter import *
-import miniProject1
+# import miniProject1
 
 class App(Frame):
     def __init__(self, master=None):
@@ -111,22 +111,19 @@ class App(Frame):
         return
 
 def checkInfo():
+    print("app.screen is {}", app.screen)
     if app.screen == "Login":
         print(app.eContent.get(), app.pwdContent.get())
-        functionHi()
+        # functionHi()
         return
     elif app.screen == "Register":
         print(app.eContent.get(), app.pwdContent.get(),
                 app.nContent.get(), app.pContent.get())
         return
 
-def main():
-    root = Tk()
-    app = App(master=root)
-    app.master.title("My Do-Nothing Application")
-    app.master.maxsize(1000, 400)
-    app.master.minsize(1000, 400)
-    app.mainloop()
-
-if __name__ == "__main__":
-    main()
+root = Tk()
+app = App(master=root)
+app.master.title("My Do-Nothing Application")
+app.master.maxsize(1000, 400)
+app.master.minsize(1000, 400)
+app.mainloop()
