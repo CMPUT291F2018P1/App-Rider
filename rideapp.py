@@ -1,7 +1,10 @@
 from tkinter import *
-# import miniProject1
+import miniProject1 as mp
 
 class App(Frame):
+    
+    screen = "Login"
+    
     def __init__(self, master=None):
         super().__init__(master)
         self.pack()
@@ -25,22 +28,21 @@ class App(Frame):
             width=400,anchor=NW)
         return
 
-
     def create_quit(self):
-        self.quit = Button(self, text="QUIT", fg="red",
-                              command=root.destroy)
-        self.quit.pack(side=RIGHT)
+        self.bQuit = Button(self, text="QUIT", fg="red",
+                              command=self.master.destroy)
+        self.bQuit.pack(side=LEFT)
         return
 
     def create_confirm(self, tb):
-        self.cButton = Button(self, text=tb, command=checkInfo)
-        self.cButton.pack(side=RIGHT)
+        self.cButton = Button(self, text=tb, command=self.buttonClick)
+        self.cButton.pack(side=LEFT)
         return
 
     def create_register(self):
         self.rButton = Button(self, text="Click to Register",
             command=self.registerScreen)
-        self.rButton.pack(side=RIGHT)
+        self.rButton.pack(side=LEFT)
         return
 
     def registerScreen(self):
@@ -63,15 +65,21 @@ class App(Frame):
         return
 
     def create_eField(self):
-        self.eEntry = Entry()
-        self.eEntry.config(width=25)
-        self.eEntry.pack(side=LEFT)
-        # here is the application variable
-        self.eContent = StringVar()
-        # set it to some value
-        self.eContent.set("email")
-        # tell the entry widget to watch this variable
-        self.eEntry["textvariable"] = self.eContent
+        
+        self.e = Entry(width=50)
+        self.e.pack()
+
+        self.e.focus_set()
+        # self.eEntry = Entry(state=NORMAL)
+        # self.eEntry.focus_set()
+        # self.eEntry.config(width=25)
+        # self.eEntry.pack(side=LEFT)        
+        # # here is the application variable
+        # self.eContent = StringVar()
+        # # set it to some value
+        # self.eContent.set("email")
+        # # tell the entry widget to watch this variable
+        # self.eEntry["textvariable"] = self.eContent
         return
 
     def create_nField(self):
@@ -109,21 +117,25 @@ class App(Frame):
         # tell the entry widget to watch this variable
         self.pwdEntry["textvariable"] = self.pwdContent
         return
-
-def checkInfo():
-    print("app.screen is {}", app.screen)
-    if app.screen == "Login":
-        print(app.eContent.get(), app.pwdContent.get())
-        # functionHi()
-        return
-    elif app.screen == "Register":
-        print(app.eContent.get(), app.pwdContent.get(),
-                app.nContent.get(), app.pContent.get())
+        
+    def buttonClick(self):
+        mp.checkInfo(self)
         return
 
-root = Tk()
-app = App(master=root)
-app.master.title("My Do-Nothing Application")
-app.master.maxsize(1000, 400)
-app.master.minsize(1000, 400)
-app.mainloop()
+# def checkInfo(app):
+#     print("app.screen is ", app.screen)
+#     if app.screen == "Login":
+#         print(app.eContent.get(), app.pwdContent.get())
+#         mp.functionHi()
+#         return
+#     elif app.screen == "Register":
+#         print(app.eContent.get(), app.pwdContent.get(),
+#                 app.nContent.get(), app.pContent.get())
+#         return
+
+# root = Tk()
+# app = App(master=root)
+# app.master.title("My Do-Nothing Application")
+# app.master.maxsize(1000, 400)
+# app.master.minsize(1000, 400)
+# app.mainloop()
