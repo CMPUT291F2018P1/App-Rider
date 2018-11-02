@@ -19,6 +19,9 @@ GUI Requirements:
 6. Text telling user what to do
 
 
+Register screen
+ email, a name, a phone, and a password
+
 After a login, all unseen messages of the member will be displayed,
 and the status of the messages will be set to seen (i.e, the seen column is
 set to 'y'). Unregistered members should be able to sign up by providing a

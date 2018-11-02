@@ -1,4 +1,5 @@
 from tkinter import *
+import miniProject1
 
 class App(Frame):
     def __init__(self, master=None):
@@ -8,35 +9,22 @@ class App(Frame):
 
     def create_initWidgets(self):
         self.create_quit()
-        self.create_unField()
+        self.create_eField()
         self.create_pwdField()
-        self.create_confirm()
+        self.create_confirm("Login")
         self.create_register()
+        self.create_text()
+        self.screen = "Login"
         return
 
-    def create_unField(self):
-        self.unEntry = Entry()
-        self.unEntry.config(width=50)
-        self.unEntry.pack(side=LEFT)
-        # here is the application variable
-        self.unContent = StringVar()
-        # set it to some value
-        self.unContent.set("Username")
-        # tell the entry widget to watch this variable
-        self.unEntry["textvariable"] = self.unContent
+    def create_text(self):
+        self.canvas = Canvas(width=200, height=100)
+        self.canvas.pack(side=LEFT)
+        tbtext = "Please Enter your email and password"
+        self.textbox = self.canvas.create_text(1,1, text=tbtext,
+            width=400,anchor=NW)
         return
 
-    def create_pwdField(self):
-        self.pwdEntry = Entry(show='*')
-        self.pwdEntry.config(width=50)
-        self.pwdEntry.pack(side=LEFT)
-        # here is the application variable
-        self.pwdContent = StringVar()
-        # set it to some value
-        self.pwdContent.set("Password")
-        # tell the entry widget to watch this variable
-        self.pwdEntry["textvariable"] = self.pwdContent
-        return
 
     def create_quit(self):
         self.quit = Button(self, text="QUIT", fg="red",
@@ -44,8 +32,8 @@ class App(Frame):
         self.quit.pack(side=RIGHT)
         return
 
-    def create_confirm(self):
-        self.cButton = Button(self, text="Login", command=checkInfo)
+    def create_confirm(self, tb):
+        self.cButton = Button(self, text=tb, command=checkInfo)
         self.cButton.pack(side=RIGHT)
         return
 
@@ -55,17 +43,8 @@ class App(Frame):
         self.rButton.pack(side=RIGHT)
         return
 
-    def print_unContents(self, event):
-        print(self.unContent.get())
-        return
-
-    def print_pwdContents(self, event):
-        print(self.pwdContent.get())
-        return
-
     def registerScreen(self):
-        print("Register button works")
-        self.unEntry.destroy()
+        self.eEntry.destroy()
         self.pwdEntry.destroy()
         self.cButton.destroy()
         self.rButton.destroy()
@@ -73,17 +52,81 @@ class App(Frame):
         return
 
     def create_rScreen(self):
-        print("Function call works, te be implemented")
+        tbtext = "Please enter your email, full name,\nphone number and password"
+        self.screen = "Register"
+        self.canvas.itemconfig(self.textbox, text=tbtext)
+        self.create_eField()
+        self.create_nField()
+        self.create_pField()
+        self.create_pwdField()
+        self.create_confirm("Submit")
+        return
+
+    def create_eField(self):
+        self.eEntry = Entry()
+        self.eEntry.config(width=25)
+        self.eEntry.pack(side=LEFT)
+        # here is the application variable
+        self.eContent = StringVar()
+        # set it to some value
+        self.eContent.set("email")
+        # tell the entry widget to watch this variable
+        self.eEntry["textvariable"] = self.eContent
+        return
+
+    def create_nField(self):
+        self.nEntry = Entry()
+        self.nEntry.config(width=25)
+        self.nEntry.pack(side=LEFT)
+        # here is the application variable
+        self.nContent = StringVar()
+        # set it to some value
+        self.nContent.set("Full Name")
+        # tell the entry widget to watch this variable
+        self.nEntry["textvariable"] = self.nContent
+        return
+
+    def create_pField(self):
+        self.pEntry = Entry()
+        self.pEntry.config(width=25)
+        self.pEntry.pack(side=LEFT)
+        # here is the application variable
+        self.pContent = StringVar()
+        # set it to some value
+        self.pContent.set("Phone Number")
+        # tell the entry widget to watch this variable
+        self.pEntry["textvariable"] = self.pContent
+        return
+
+    def create_pwdField(self):
+        self.pwdEntry = Entry(show='*')
+        self.pwdEntry.config(width=25)
+        self.pwdEntry.pack(side=LEFT)
+        # here is the application variable
+        self.pwdContent = StringVar()
+        # set it to some value
+        self.pwdContent.set("Password")
+        # tell the entry widget to watch this variable
+        self.pwdEntry["textvariable"] = self.pwdContent
         return
 
 def checkInfo():
-    print("Print statement demonstrates how to grab un and pwd")
-    print(app.unContent.get(), app.pwdContent.get())
-    return
+    if app.screen == "Login":
+        print(app.eContent.get(), app.pwdContent.get())
+        functionHi()
+        return
+    elif app.screen == "Register":
+        print(app.eContent.get(), app.pwdContent.get(),
+                app.nContent.get(), app.pContent.get())
+        return
 
-root = Tk()
-app = App(master=root)
-app.master.title("My Do-Nothing Application")
-app.master.maxsize(1000, 400)
-app.master.minsize(1000, 400)
-app.mainloop()
+def main():
+    root = Tk()
+    app = App(master=root)
+    app.master.title("My Do-Nothing Application")
+    app.master.maxsize(1000, 400)
+    app.master.minsize(1000, 400)
+    app.mainloop()
+
+if __name__ == "__main__":
+    main()

@@ -2,6 +2,10 @@
 # https://docs.python.org/3/library/tkinter.html#tkinter-modules
 # http://effbot.org/tkinterbook/entry.htm
 
+# file1 = "D:\\uoA\\Fall 2018\\CMPUT291\\MP1\\App-Rider\\rideapp.py"
+# file2 = "D:\\UoA\\Fall 2018\\CMPUT291\\MP1\\App-Rider\\miniProject1.py"
+# exec(open(file1).read())
+
 #
 # class Application(tk.Frame):
 #     def __init__(self, master=None):

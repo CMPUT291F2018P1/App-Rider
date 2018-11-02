@@ -32,7 +32,7 @@ def drop_tables():
     drop_inbox = "DROP TABLE IF EXISTS inbox; "
 
     cursor.execute(drop_requests)
-    
+
     cursor.execute(drop_enroute)
     cursor.execute(drop_bookings)
     cursor.execute(drop_inbox)
@@ -119,7 +119,7 @@ def define_tables():
                                 FOREIGN KEY(rno) REFERENCES rides(rno),
                                 FOREIGN KEY(lcode) REFERENCES locations(lcode)
                                 );
-                '''    
+                '''
     requests_query = '''
                     CREATE TABLE requests (
                                 rid INTEGER,
@@ -133,7 +133,7 @@ def define_tables():
                                 FOREIGN KEY(pickup) REFERENCES locations,
                                 FOREIGN KEY(dropoff) REFERENCES locations
                                 );
-                '''    
+                '''
     inbox_query = '''
                     CREATE TABLE inbox (
                                 email TEXT,
@@ -147,7 +147,7 @@ def define_tables():
                                 FOREIGN KEY(sender) REFERENCES members,
                                 FOREIGN KEY(rno) REFERENCES rides(rno)
                                 );
-                '''    
+                '''
 
     cursor.execute(members_query)
     cursor.execute(cars_query)
@@ -333,32 +333,32 @@ def main():
     drop_tables()
     define_tables()
     insert_data()
-    
+
     # test to see if each table was succesfully created and if each data was successfull stored into the tables
     cursor.execute("SELECT * FROM members WHERE members.pwd = 'dpass';")
     row1 = cursor.fetchall()
-    
+
     cursor.execute("SELECT * FROM cars WHERE cars.cno = 9;")
     row2 = cursor.fetchall()
-    
+
     cursor.execute("SELECT * FROM locations WHERE locations.city = 'Calgary';")
-    row3 = cursor.fetchall()  
-    
+    row3 = cursor.fetchall()
+
     cursor.execute("SELECT * FROM rides WHERE rides.price = 50;")
-    row4 = cursor.fetchall()   
-    
+    row4 = cursor.fetchall()
+
     cursor.execute("SELECT * FROM bookings WHERE bookings.rno = 5;")
     row5 = cursor.fetchall()
-    
+
     cursor.execute("SELECT * FROM enroute WHERE enroute.rno = 12;")
     row6 = cursor.fetchall()
-    
+
     cursor.execute("SELECT * FROM requests WHERE requests.dropoff = 'sth3';")
     row7 = cursor.fetchall()
-    
+
     cursor.execute("SELECT * FROM inbox WHERE inbox.rno = 36;")
-    row8 = cursor.fetchall() 
-    
+    row8 = cursor.fetchall()
+
     print(row1)
     print(row2)
     print(row3)
@@ -366,14 +366,17 @@ def main():
     print(row5)
     print(row6)
     print(row7)
-    print(row8)    
-    
-    
+    print(row8)
+
+
 
     connection.commit()
     connection.close()
     return
 
+def functionHi():
+    print("Call across files works!")
+    return
 
 if __name__ == "__main__":
     main()
