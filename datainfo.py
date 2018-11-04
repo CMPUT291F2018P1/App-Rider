@@ -12,7 +12,7 @@ cursor = None
 def connect(path):
     global connection, cursor
 
-    connection = sqlite3.connect(path)
+    connection = sqlite3.connect('./dbdb.db')
     cursor = connection.cursor()
     cursor.execute(' PRAGMA foreign_keys=ON; ')
     connection.commit()
@@ -32,7 +32,6 @@ def drop_tables():
     drop_inbox = "DROP TABLE IF EXISTS inbox; "
 
     cursor.execute(drop_requests)
-
     cursor.execute(drop_enroute)
     cursor.execute(drop_bookings)
     cursor.execute(drop_inbox)
@@ -119,21 +118,21 @@ def define_tables():
                                 FOREIGN KEY(rno) REFERENCES rides(rno),
                                 FOREIGN KEY(lcode) REFERENCES locations(lcode)
                                 );
-                '''
+                '''    
     requests_query = '''
                     CREATE TABLE requests (
-                                rid INTEGER,
+                                rid INTEGER INDENTITY(1,1),
                                 email TEXT,
                                 rdate DATE,
                                 pickup TEXT,
                                 dropoff TEXT,
                                 amount INTEGER,
                                 PRIMARY KEY (rid),
-                                FOREIGN KEY(email) REFERENCES members(email),
+                                FOREIGN KEY(email) REFERENCES members,
                                 FOREIGN KEY(pickup) REFERENCES locations,
                                 FOREIGN KEY(dropoff) REFERENCES locations
                                 );
-                '''
+                '''    
     inbox_query = '''
                     CREATE TABLE inbox (
                                 email TEXT,
@@ -147,7 +146,7 @@ def define_tables():
                                 FOREIGN KEY(sender) REFERENCES members,
                                 FOREIGN KEY(rno) REFERENCES rides(rno)
                                 );
-                '''
+                '''    
 
     cursor.execute(members_query)
     cursor.execute(cars_query)
@@ -323,6 +322,167 @@ def insert_data():
     connection.commit()
     return
 
+def bookings(name):
+    # The member should be able to list all bookings on rides s/he offers
+    global connection, cursor
+
+    sql = "SELECT * FROM bookings WHERE bookings.email = (SELECT email FROM members WHERE members.name = ?)"
+    cursor.execute(sql, (name,))
+    return 
+
+def b_cancel(name,rid):
+    # The member should be able to cancel any bookings on rides s/he offers
+    global connection, cursor
+
+    data = (name,rid)
+    cursor.execute('DELETE FROM bookings WHERE bookings.email = (SELECT email FROM members WHERE members.name = ?) AND rid = ?;', data)
+    connection.commit()
+    return
+
+def request(rides):
+    # This function is not finished, having problems that I stll can't fix.
+    global connection, cursor
+
+    sql = ''' INSERT INTO requests VALUES (?, ?, ?, ?, ?, ?) '''
+
+    cursor.execute(''' INSERT INTO requests VALUES (?, ?, ?, ?, ?, ?) ''', rides)
+    return cursor.lastrowid
+
+
+def search(name):
+    # The member should be able to see all his/her ride requests
+    # This function search the database using the member's name provided.
+    global connection, cursor
+    
+    sql = "SELECT * FROM requests WHERE requests.email = (SELECT email FROM members WHERE members.name = ?)"
+    cursor.execute(sql, (name,))
+    return
+
+def search_pickup(name):
+    # Also the member should be able to provide a location code or a city
+    # and see a listing of all requests with a pickup location matching the location code or the city entered.
+    # If there are more than 5 matches, at most 5 matches will be shown at a time.
+    global connection, cursor
+    
+    sql_1 = "SELECT * FROM requests WHERE requests.pickup IN (SELECT lcode FROM locations WHERE locations.city = ?) OR requests.pickup = ? LIMIT 5"
+    cursor.execute(sql_1, (name,name))
+    return    
+    
+def search_rides(key1,key2,key3):
+    global connection, cursor
+    sql = "SELECT * FROM rides WHERE rides.src IN (SELECT lcode FROM locations WHERE locations.city = ?) OR rides.dst = ? LIMIT 5"
+    return
+
+def searchLogin(email, pwd):
+    global connection, cursor
+    sql = "select count(*) from members where email=? and pwd=?"
+    cursor.execute(sql, (email,pwd))
+    val = cursor.fetchall()
+    return val[0][0] == 1
+    
+
+def registerUser(email, pwd, phone, name):
+    global connection, cursor
+    failed = False
+    email.lower()
+    atSymbol = 0
+    dot = 0
+    
+    # Checking for correct syntax in email
+    for letter in email:
+        if letter == "@":
+            atSymbol += 1
+        if letter == "." and atSymbol == 1:
+            dot += 1
+    if atSymbol != 1 or dot < 1:
+        failed = True
+    if failed:
+        # First zero - register fail
+        # Second digit - non-proper format for email
+        return (0,1)
+    
+    # Checking for correct phone number syntax
+    if not phone[0:2].isdigit() or not phone[4:6].isdigit() or not phone[8:11].isdigit():
+        # First zero - register fail
+        # Second digit - non-proper format for phone number
+        print(phone)
+        return (0,2)
+    if not phone[3] == "-" or not phone[7] == "-":
+        # See above
+        print(phone)
+        return (0,2)
+    
+    sql = "select count(*) from members where email=?"
+    cursor.execute(sql, (email,))
+    val = cursor.fetchall()
+    if val[0][0] == 1:
+        # first zero - register fail
+        # second zero - non-unique email
+        return (0, 0)
+    else:
+        sql = "insert into members (email, name, phone, pwd) values (?,?,?,?);"
+        cursor.execute(sql, (email,name,phone,pwd,))
+        return (1,None)
+    
+
+
+
+def testFunction():
+# test to see if each table was succesfully created and if each data was successfull stored into the tables
+    cursor.execute("SELECT * FROM members WHERE members.pwd = 'dpass';")
+    row1 = cursor.fetchall()
+  
+    cursor.execute("SELECT * FROM cars WHERE cars.cno = 9;")
+    row2 = cursor.fetchall()
+    
+    cursor.execute("SELECT * FROM locations WHERE locations.city = 'Calgary';")
+    row3 = cursor.fetchall()  
+    
+    cursor.execute("SELECT * FROM rides WHERE rides.price = 50;")
+    row4 = cursor.fetchall()   
+    
+    cursor.execute("SELECT * FROM bookings WHERE bookings.rno = 5;")
+    row5 = cursor.fetchall()
+    
+    cursor.execute("SELECT * FROM enroute WHERE enroute.rno = 12;")
+    row6 = cursor.fetchall()
+    
+    cursor.execute("SELECT * FROM requests WHERE requests.dropoff = 'bntr2';")
+    row7 = cursor.fetchall()
+    
+    cursor.execute("SELECT * FROM inbox WHERE inbox.rno = 36;")
+    row8 = cursor.fetchall() 
+
+
+    ride_1 = (11,'jane_doe@abc.ca', '2018-04-26', 'abtr3', 'cntr2', 10)
+    # request(ride_1)
+    cursor.execute("SELECT * FROM requests WHERE requests.dropoff = 'abtr3';")
+    row12 = cursor.fetchall() 
+
+    name_1 = 'Mark Messier'
+    search(name_1)
+    row9 = cursor.fetchall()
+    name_2 = 'Edmonton'
+    search_pickup(name_2)
+    row10 = cursor.fetchall()
+    name_3 = 'nrth2'
+    search_pickup(name_3)
+    row11 = cursor.fetchall()    
+    
+
+    
+    # print(row9)
+    # print(row10)
+    # print(row11)
+    # print(row12)
+    #print(row2)
+    #print(row3)
+    #print(row4)
+    #print(row5)
+    #print(row6)
+    #print(row7)
+    #print(row8)        
+    return
 
 
 def main():
@@ -333,50 +493,9 @@ def main():
     drop_tables()
     define_tables()
     insert_data()
-
-    # test to see if each table was succesfully created and if each data was successfull stored into the tables
-    cursor.execute("SELECT * FROM members WHERE members.pwd = 'dpass';")
-    row1 = cursor.fetchall()
-
-    cursor.execute("SELECT * FROM cars WHERE cars.cno = 9;")
-    row2 = cursor.fetchall()
-
-    cursor.execute("SELECT * FROM locations WHERE locations.city = 'Calgary';")
-    row3 = cursor.fetchall()
-
-    cursor.execute("SELECT * FROM rides WHERE rides.price = 50;")
-    row4 = cursor.fetchall()
-
-    cursor.execute("SELECT * FROM bookings WHERE bookings.rno = 5;")
-    row5 = cursor.fetchall()
-
-    cursor.execute("SELECT * FROM enroute WHERE enroute.rno = 12;")
-    row6 = cursor.fetchall()
-
-    cursor.execute("SELECT * FROM requests WHERE requests.dropoff = 'sth3';")
-    row7 = cursor.fetchall()
-
-    cursor.execute("SELECT * FROM inbox WHERE inbox.rno = 36;")
-    row8 = cursor.fetchall()
-
-    print(row1)
-    print(row2)
-    print(row3)
-    print(row4)
-    print(row5)
-    print(row6)
-    print(row7)
-    print(row8)
-
-
-
-    connection.commit()
-    connection.close()
+    
     return
 
-def functionHi():
-    print("Call across files works!")
-    return
 
 if __name__ == "__main__":
     main()

@@ -1,5 +1,7 @@
 from tkinter import *
-import rideapp as ap
+# import rideapp as ap
+import tkinterinfo as ti
+import datainfo as di
 
 # root = Tk()
 # app = ap.App(master=root)
@@ -9,22 +11,10 @@ app = None
 def main():
     global root, app
     root = Tk()
-    app = ap.App(master=root)
-    app.master.title("Ride Application")
-    app.master.maxsize(1000, 400)
-    app.master.minsize(1000, 400)
-    app.mainloop()
+    di.main()
+    ti.main(root)
+
+
 
 if __name__ == "__main__":
     main()
-
-def checkInfo(app):
-    print("In check Info")
-    if app.screen == "Login":
-        print(app.eContent.get(), app.pwdContent.get())
-        return
-    elif app.screen == "Register":
-        print(app.eContent.get(), app.pwdContent.get(),
-                app.nContent.get(), app.pContent.get())
-        return
-    return  
