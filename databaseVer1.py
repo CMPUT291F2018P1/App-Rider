@@ -1,9 +1,6 @@
-'''
-this is the database for the program.
-all tables are created.
-the data used for testing are originally prepared by Tanner Chell, tchell@ualberta.ca.
-'''
-
+# this is the database for the program.
+# all tables are created.
+# the data used for testing are originally prepared by Tanner Chell, tchell@ualberta.ca.
 
 import sqlite3
 import time
@@ -72,7 +69,7 @@ create table locations (
   primary key (lcode)
 );
 create table rides (
-  rno		int,
+  rno		integer primary key,
   price		int,
   rdate		date,
   seats		int,
@@ -81,7 +78,6 @@ create table rides (
   dst		char(5),
   driver	char(15),
   cno		int,
-  primary key (rno),
   foreign key (src) references locations,
   foreign key (dst) references locations,
   foreign key (driver) references members,
@@ -297,47 +293,72 @@ def insert_data():
     connection.commit()
     return
 
-def bookings(name):
+# System Function 1 some finished
+def offer(price, rdate, seats, lugDesc, src, dst, driver, cno):
+    # The member should be able to offer rides by providing a date, the number of seats offered, the price per seat, a luggage description, a source location, and a destination location. 
+    global connection, cursor
+    sql_2 = ''' INSERT INTO rides(rno, price, rdate, seats, lugDesc, src, dst, driver, cno) VALUES (null, ?, ?, ?, ?, ?, ?, ?, ?) ''' 
+    data = (price, rdate, seats, lugDesc, src, dst, driver, cno)
+    cursor.execute(sql,data)
+    connection.commit()  
+    return
+        
+def add_enroute(rno,lcode):
+    global connection, cursor
+    sql_2 = ''' INSERT INTO enroute(rno, lcode) VALUES (?, ?) ''' 
+    data = (rno,lcode)
+    cursor.execute(sql,data)
+    connection.commit()          
+    return
+
+# System Function 2 not finished
+def search_rides(key1,key2,key3):
+    global connection, cursor
+    
+    sql = "SELECT * FROM rides WHERE rides.src IN (SELECT lcode FROM locations WHERE locations.city = ?) OR rides.dst = ? LIMIT 5"    
+
+# System Function 3
+def bookings(email):
     # The member should be able to list all bookings on rides s/he offers
     global connection, cursor
-
-    sql = "SELECT * FROM bookings WHERE bookings.email = (SELECT email FROM members WHERE members.name = ?)"
-    cursor.execute(sql, (name,))
-    return 
-
-def b_cancel(name,rid):
+    sql = "SELECT * FROM bookings WHERE bookings.email = ?"
+    cursor.execute(sql, (email,))
+    booking = cursor.fetchall()
+    return booking
+    
+def b_cancel(email,rid):
     # The member should be able to cancel any bookings on rides s/he offers
     global connection, cursor
 
-    data = (name,rid)
-    cursor.execute('DELETE FROM bookings WHERE bookings.email = (SELECT email FROM members WHERE members.name = ?) AND rid = ?;', data)
+    data = (email,rid)
+    cursor.execute('DELETE FROM bookings WHERE bookings.email ? AND rid = ?;', data)
     connection.commit()
     return
 
+# System Function 4
 def request(email,date,pickup,dropoff,amount):
     # Post ride requests.The member should be able to post a ride request by providing a date, a pick up location code, a drop off location code, and the amount willing to pay per seat. 
     # The request rid is set by your system to a unique number and the email is set to the email address of the member.
     global connection, cursor
-
     sql = ''' INSERT INTO requests VALUES (null, ?, ?, ?, ?, ?) '''
     #cursor.execute("SELECT email FROM members WHERE members.name = ?",(name,))
     #email = str(cursor.fetchone()).replace('"','').replace('"','')
     data = (email,date,pickup,dropoff,amount)
     cursor.execute(sql,data)
     connection.commit()
-    return
+    return    
 
-
-def search(name):
+# System Function 5
+def search(email):
     # The member should be able to see all his/her ride requests
     # This function search the database using the member's name provided.
     global connection, cursor
     
-    sql = "SELECT * FROM requests WHERE requests.email = (SELECT email FROM members WHERE members.name = ?)"
-    cursor.execute(sql, (name,))
+    sql = "SELECT * FROM requests WHERE requests.email = ?"
+    cursor.execute(sql, (email,))
     req_n = cursor.fetchall()
     return req_n
-
+    
 def search_pickup(name):
     # Also the member should be able to provide a location code or a city
     # and see a listing of all requests with a pickup location matching the location code or the city entered.
@@ -347,12 +368,9 @@ def search_pickup(name):
     sql_1 = "SELECT * FROM requests WHERE requests.pickup IN (SELECT lcode FROM locations WHERE locations.city = ?) OR requests.pickup = ? LIMIT 5"
     cursor.execute(sql_1, (name,name))
     req_l = cursor.fetchall()
-    return req_l
+    return req_l    
     
-def search_rides(key1,key2,key3):
-    global connection, cursor
 
-    sql = "SELECT * FROM rides WHERE rides.src IN (SELECT lcode FROM locations WHERE locations.city = ?) OR rides.dst = ? LIMIT 5"
     
 def test_data():
     # test to see if each table was succesfully created and if each data was successfull stored into the tables
@@ -380,14 +398,33 @@ def test_data():
     cursor.execute("SELECT * FROM inbox WHERE inbox.rno = 36;")
     row8 = cursor.fetchall() 
     
-    print(row1)
-    print(row2)
-    print(row3)
-    print(row4)
-    print(row5)
-    print(row6)
-    print(row7)
-    print(row8)    
+    #print(row1)
+    #print(row2)
+    #print(row3)
+    #print(row4)
+    #print(row5)
+    #print(row6)
+    #print(row7)
+    #print(row8)    
+    
+    # test if it is able to post a ride request
+    request('jane_doe@abc.ca','2018-10-21', 'nrth2', 'sth3', 10)
+    cursor.execute("SELECT * FROM requests WHERE requests.rdate = '2018-10-21';")
+    print(cursor.fetchall())
+    
+    # test if it is able to list all bookings on rides the member offers
+    print(bookings('connor@oil.com'))
+
+    # test if the member is able to see all his/her ride requests
+    name_1 = 'mess@marky.mark'
+    print(search(name_1))
+    
+    # test if the member is able to provide a location code or a city
+    # and see a listing of all requests with a pickup location matching the location code or the city entered.    
+    name_2 = 'Edmonton'
+    print(search_pickup(name_2))
+    name_3 = 'nrth2'
+    print(search_pickup(name_3))    
     
 def main():
     global connection, cursor
@@ -397,20 +434,9 @@ def main():
     drop_tables()
     define_tables()
     insert_data()
-    test_data()
-
-    request('jane_doe@abc.ca','2018-10-21', 'nrth2', 'sth3', 10)
-    cursor.execute("SELECT * FROM requests WHERE requests.rdate = '2018-10-21';")
-    print(cursor.fetchall())
-
-    name_1 = 'Mark Messier'
-    print(search(name_1))
-    name_2 = 'Edmonton'
-    print(search_pickup(name_2))
-    name_3 = 'nrth2'
-    print(search_pickup(name_3))
     
-
+    test_data()
+    
     connection.commit()
     connection.close()
     return
