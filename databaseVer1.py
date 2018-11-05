@@ -1,6 +1,9 @@
-# this is the database for the program.
-# all tables are created.
-# the data used for testing are originally prepared by Tanner Chell, tchell@ualberta.ca.
+'''
+this is the database for the program.
+all tables are created.
+the data used for testing are originally prepared by Tanner Chell, tchell@ualberta.ca.
+'''
+
 
 import sqlite3
 import time
