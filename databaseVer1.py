@@ -10,12 +10,14 @@ connection = None
 cursor = None
 
 
-def connect(path):
+def connect(path, db):
     global connection, cursor
 
-    connection = sqlite3.connect('./testdatadb.db')
+    connection = sqlite3.connect('./{}'.format(db), uri=True)
+    # connection = sqlite3.connect('./CandCProf.db', uri=True)
     cursor = connection.cursor()
     cursor.execute(' PRAGMA foreign_keys=ON; ')
+    # cursor.execute('open CandCProf.db')
     connection.commit()
     return
 
@@ -520,11 +522,17 @@ def test_data():
     name_3 = 'nrth2'
     print(search_pickup(name_3))    
     
-def main():
+def main(args):
     global connection, cursor
 
     path = "./register.db"
-    connect(path)
+    # connect(path)
+    # args = [0,"CandCProf.db"]
+    # print(args(1))
+    # sql = ".open {}".format(args[1])
+
+    # cursor.execute(sql)
+    connect(path,args[1])    
     drop_tables()
     define_tables()
     insert_data()
@@ -537,4 +545,4 @@ def main():
 
 
 if __name__ == "__main__":
-    main()
+    main("test")
