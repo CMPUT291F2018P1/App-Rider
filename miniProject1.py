@@ -1,7 +1,7 @@
 from tkinter import *
-# import rideapp as ap
 import tkinterinfo as ti
-import datainfo as di
+import databaseVer1 as dbv1
+import sys
 
 # root = Tk()
 # app = ap.App(master=root)
@@ -11,7 +11,7 @@ app = None
 def main():
     global root, app
     root = Tk()
-    di.main()
+    dbv1.main()
     ti.main(root)
 
 

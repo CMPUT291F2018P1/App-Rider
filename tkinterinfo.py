@@ -1,5 +1,6 @@
 from tkinter import *
-import datainfo as di
+# import datainfo as di
+import databaseVer1 as dbv1
 
 widgetDict = dict()
 currentUser = str()
@@ -95,18 +96,16 @@ def create_bQuit(parent):
 
 #  Credit to Voo for the command lambda function idea
 # https://stackoverflow.com/questions/6920302/how-to-pass-arguments-to-a-button-command-in-tkinter
-def create_bAlpha(parent, tb):
+def create_bAlpha(parent, tb, screen=None):
     global widgetDict
-    aButton = Button(parent, text=tb, command=lambda: buttonClick(parent, tb))
-    # aButton.pack(side=TOP)
+    aButton = Button(parent, text=tb, command=lambda: buttonClick(parent,tb,screen))
     aButton.grid(row=0, column=1)
     widgetDict["bAlpha"] = (aButton, tb)
     return
 
-def create_bBeta(parent, tb):
+def create_bBeta(parent, tb, screen=None):
     global widgetDict
-    bButton = Button(parent, text=tb, command=lambda: buttonClick(parent,tb))
-    # bButton.pack(side=TOP)
+    bButton = Button(parent, text=tb, command=lambda: buttonClick(parent,tb,screen))
     bButton.grid(row=0, column=2)
     widgetDict["bBeta"] = (bButton, tb)
     return
@@ -114,65 +113,50 @@ def create_bBeta(parent, tb):
 def create_tGamma(parent, tb):
     global widgetDict
     tCanvas = Canvas(parent, width=300, height=100)
-    # tCanvas.pack(side=RIGHT)
     tCanvas.grid(row=7, column=10)
     textboxID = tCanvas.create_text(1,1, text=tb, width=300,anchor=NW)
     widgetDict["tCanvas"] = tCanvas
     widgetDict["tGamma"] = (textboxID, tb)
-    # print("textbox is {} and has type {}".format(textbox, type(textbox)))
     return
 
 def create_lDelta(parent, ls):
     global widgetDict
     lDelta = Listbox(parent, height=20, width=100)
-    # lDelta.pack(side=LEFT)
     lDelta.grid(row=8, column=0, columnspan=5)
     for item in ls:
         lDelta.insert(END, item)
     widgetDict["lDelta"] = lDelta
     return
 
-def create_bEpsilon(parent, tb):
+def create_bEpsilon(parent, tb, screen=None):
     global widgetDict
-    bButton = Button(parent, text=tb, command=lambda: buttonClick(parent,tb))
-    # bButton.pack(side=TOP)
+    bButton = Button(parent, text=tb, command=lambda: buttonClick(parent,tb,screen))
     bButton.grid(row=0, column=3)
     widgetDict["bEpsilon"] = (bButton, tb)
     return
 
-def create_bZeta(parent, tb):
+def create_bZeta(parent, tb, screen=None):
     global widgetDict
-    bButton = Button(parent, text=tb, command=lambda: buttonClick(parent,tb))
-    # bButton.pack(side=TOP)
+    bButton = Button(parent, text=tb, command=lambda: buttonClick(parent,tb, screen))
     bButton.grid(row=0, column=4)
     widgetDict["bZeta"] = (bButton, tb)
     return
 
-def create_bEta(parent, tb):
+def create_bEta(parent, tb, screen=None):
     global widgetDict
-    bButton = Button(parent, text=tb, command=lambda: buttonClick(parent,tb))
-    # bButton.pack(side=TOP)
+    bButton = Button(parent, text=tb, command=lambda: buttonClick(parent,tb, screen))
     bButton.grid(row=0, column=5)
     widgetDict["bEta"] = (bButton, tb)
     return
 
-def create_bTheta(parent, tb):
+def create_bTheta(parent, tb, screen=None):
     global widgetDict
-    bButton = Button(parent, text=tb, command=lambda: buttonClick(parent,tb))
-    # bButton.pack(side=TOP)
+    bButton = Button(parent, text=tb, command=lambda: buttonClick(parent,tb,screen))
     bButton.grid(row=0, column=6)
     widgetDict["bTheta"] = (bButton, tb)
     return
 
-def create_bIota(parent, tb):
-    global widgetDict
-    bButton = Button(parent, text=tb, command=lambda: buttonClick(parent,tb))
-    # bButton.pack(side=TOP)
-    bButton.grid(row=0, column=7)
-    widgetDict["bIota"] = (bButton, tb)
-    return
-
-def buttonClick(parent, tb):
+def buttonClick(parent, tb, screen):
     if tb == "Login":
         loginCommand(parent)
     elif tb == "Register":
@@ -204,6 +188,12 @@ def buttonClick(parent, tb):
     elif tb == "Search & Delete Ride Requests":
         delete_all()
         create_sadrrScreen(parent)
+    elif tb == "Confirm" and screen == "Offer a Ride":
+        oarCommand(parent)
+    elif tb == "Search" and screen == "Search for Rides":
+        pass
+    elif tb == "Post" and screen == "Post Ride Requests":
+        pass
     return
 
 def delete_all():
@@ -223,7 +213,7 @@ def loginCommand(parent):
     global widgetDict, currentUser
     aField = widgetDict["aField"]
     bField = widgetDict["bField"]
-    loginT = di.searchLogin(aField.get(), bField.get())
+    loginT = dbv1.searchLogin(aField.get(), bField.get())
     if loginT:
         currentUser = aField.get()
         delete_all()
@@ -240,7 +230,7 @@ def registerCommand():
     bField = widgetDict["bField"]
     dField = widgetDict["dField"]
     cField = widgetDict["cField"]
-    regT = di.registerUser(aField.get(), bField.get(),dField.get(),cField.get())
+    regT = dbv1.registerUser(aField.get(), bField.get(),dField.get(),cField.get())
     if regT[0] == 1:
         nText = "Successful registration!  Return to Login page to login"
 
@@ -256,6 +246,24 @@ def registerCommand():
     widgetDict["tCanvas"].itemconfig(textboxID, text=nText)
     return
 
+def oarCommand(parent):
+    global widgetDict, currentUser
+    date = widgetDict["aField"].get()
+    seatsAvaliable = widgetDict["bField"].get()
+    price = widgetDict["cField"].get()
+    luggageDesc = widgetDict["dField"].get()
+    src = widgetDict["eField"].get()
+    dst = widgetDict["fField"].get()
+    carNum = widgetDict["gField"].get()
+    enrouteLoc = widgetDict["hField"].get()
+    suc = dbv1.addRide(currentUser, date, seatsAvaliable, price, luggageDesc, src,
+                        dst, carNum, enrouteLoc)   
+    
+    print("success?")
+    
+    return
+    
+    
 def create_rScreen(parent):
     create_bQuit(parent)
     create_bAlpha(parent, "Register")
@@ -288,7 +296,7 @@ def create_mmScreen(parent):
     create_bEta(parent, "Post Ride Requests")
     create_bTheta(parent, "Search & Delete Ride Requests")
 
-    messages = di.loadMessages(currentUser, 0)
+    messages = dbv1.loadMessages(currentUser, 0)
     create_lDelta(parent, messages)
     return
 
@@ -297,7 +305,7 @@ def create_oarScreen(parent):
     create_bQuit(parent)
     create_bAlpha(parent, "Logout")
     create_bBeta(parent, "Main Menu")
-    create_bEpsilon(parent, "Confirm")
+    create_bEpsilon(parent, "Confirm", screen="Offer a Ride")
     create_aField(parent, "Date")
     create_bField(parent, "# of Seats Avaliable")
     create_cField(parent, "Price per seat")
@@ -313,7 +321,7 @@ def create_sfrScreen(parent):
     create_bQuit(parent)
     create_bAlpha(parent, "Logout")
     create_bBeta(parent, "Main Menu")
-    create_bEpsilon(parent, "Search")
+    create_bEpsilon(parent, "Search", screen="Search for Rides")
     create_aField(parent, "Key One")
     create_bField(parent, "OPTIONAL: Key Two")
     create_cField(parent, "OPTIONAL: Key Three")
@@ -332,7 +340,7 @@ def create_prrScreen(parent):
     create_bQuit(parent)
     create_bAlpha(parent, "Logout")
     create_bBeta(parent, "Main Menu")
-    create_bEpsilon(parent, "Post")  
+    create_bEpsilon(parent, "Post",screen="Post Ride Requests")  
     create_aField(parent, "Date")
     create_bField(parent, "Pick up Location Code") 
     create_cField(parent, "Drop off Location Code")

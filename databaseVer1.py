@@ -4,6 +4,7 @@
 
 import sqlite3
 import time
+import datetime as td
 
 connection = None
 cursor = None
@@ -12,7 +13,7 @@ cursor = None
 def connect(path):
     global connection, cursor
 
-    connection = sqlite3.connect('./ttdb.db')
+    connection = sqlite3.connect('./testdatadb.db')
     cursor = connection.cursor()
     cursor.execute(' PRAGMA foreign_keys=ON; ')
     connection.commit()
@@ -303,6 +304,7 @@ def offer(price, rdate, seats, lugDesc, src, dst, driver, cno):
     connection.commit()  
     return
         
+        
 def add_enroute(rno,lcode):
     global connection, cursor
     sql_2 = ''' INSERT INTO enroute(rno, lcode) VALUES (?, ?) ''' 
@@ -370,8 +372,100 @@ def search_pickup(name):
     req_l = cursor.fetchall()
     return req_l    
     
+def loadMessages(email, seen):
+    global connection, cursor
+    # seen == 0 -> seen = n
+    # seen == 1 -> seen = y
+    # seen == 2 -> seen doesn't matter, get all
+    if seen == 0:
+        sql = "select content from inbox where email = ? and seen ='n';"
+    elif seen == 1:
+        sql = "select content from inbox where email = ? and seen ='y';"
+    elif seen == 2:
+        sql = "select content from inbox where email = ?;"
+    cursor.execute(sql, (email,))
+    val = cursor.fetchall()
+    return val
 
+def searchLogin(email, pwd):
+    global connection, cursor
+    sql = "select count(*) from members where email=? and pwd=?"
+    cursor.execute(sql, (email,pwd))
+    val = cursor.fetchall()
+    return val[0][0] == 1
+
+def registerUser(email, pwd, phone, name):
+    global connection, cursor
+    failed = False
+    email.lower()
+    atSymbol = 0
+    dot = 0
     
+    # Checking for correct syntax in email
+    for letter in email:
+        if letter == "@":
+            atSymbol += 1
+        if letter == "." and atSymbol == 1:
+            dot += 1
+    if atSymbol != 1 or dot < 1:
+        failed = True
+    if failed:
+        # First zero - register fail
+        # Second digit - non-proper format for email
+        return (0,1)
+    
+    # Checking for correct phone number syntax
+    if not phone[0:2].isdigit() or not phone[4:6].isdigit() or not phone[8:11].isdigit():
+        # First zero - register fail
+        # Second digit - non-proper format for phone number
+        print(phone)
+        return (0,2)
+    if not phone[3] == "-" or not phone[7] == "-":
+        # See above
+        print(phone)
+        return (0,2)
+    
+    sql = "select count(*) from members where email=?"
+    cursor.execute(sql, (email,))
+    val = cursor.fetchall()
+    if val[0][0] == 1:
+        # first zero - register fail
+        # second zero - non-unique email
+        return (0, 0)
+    else:
+        sql = "insert into members (email, name, phone, pwd) values (?,?,?,?);"
+        cursor.execute(sql, (email,name,phone,pwd,))
+        return (1,None)
+
+
+def getCNO(email):
+    global connection, cursor
+    sql = "select cno from cars where owner=?"
+    cursor.execute(sql, (email,))
+    val = cursor.fetchall()
+    return val[0][0]
+
+def uniqueID(table, IDtype):
+    tm = td.datetime.now()
+    ID = (tm.second * tm.microsecond) % 1999
+    sql = "select count(*) from {} where {}=?".format(table,IDtype)
+    cursor.execute(sql, (ID,))
+    val = cursor.fetchall()
+    if val[0][0] == 0:
+        print("ID is {} and type is {}".format(ID, type(ID)))
+        return ID
+    else:
+        return uniqueID(table, IDtype)
+
+def addRide(email, date, seats, price, luggageDesc, src, dst, carNum=None, enrouteLoc=None):
+    global connection, cursor
+    rno = uniqueID("rides", "rno")
+    cno = getCNO(email)
+    # rides(rno, price, rdate, seats, lugDesc, src, dst, driver, cno)
+    sql = "insert into rides values (?,?,?,?,?,?,?,?,?)"
+    cursor.execute(sql, (rno, price, date, seats, luggageDesc, src, dst, email, cno))    
+    return    
+            
 def test_data():
     # test to see if each table was succesfully created and if each data was successfull stored into the tables
     cursor.execute("SELECT * FROM members WHERE members.pwd = 'dpass';")
@@ -435,10 +529,10 @@ def main():
     define_tables()
     insert_data()
     
-    test_data()
+    # test_data()
     
-    connection.commit()
-    connection.close()
+    # connection.commit()
+    # connection.close()
     return
 
 

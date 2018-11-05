@@ -19,6 +19,7 @@ def drop_tables(connection, cursor):
     cursor.execute(drop_cars)
     cursor.execute(drop_members)
     cursor.execute(drop_locations)
+    return
 
 
 def define_tables(connection, cursor):

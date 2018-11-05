@@ -5,6 +5,7 @@
 import sqlite3
 import time
 import inputdata as ind
+import datetime
 
 connection = None
 cursor = None
@@ -71,7 +72,7 @@ def search_rides(key1,key2,key3):
     return
     
 def loadMessages(email, seen):
-    global connectoin, cursor
+    global connection, cursor
     # seen == 0 -> seen = n
     # seen == 1 -> seen = y
     # seen == 2 -> seen doesn't matter, get all
@@ -84,6 +85,28 @@ def loadMessages(email, seen):
     cursor.execute(sql, (email,))
     val = cursor.fetchall()
     return val
+
+def getCNO(email):
+    global connection, cursor
+    sql = "select cno from cars where owner=?"
+    cursor.execute(sql, (email,))
+    val = cursor.fetchall()
+    return val[0][0]
+
+def addRide(email, date, seats, price, luggageDesc, src, dst, carNum=None, enrouteLoc=None):
+    global connection, cursor
+    time = datetime.datetime.now()
+    rno = (time.second * time.microsecond) % 1999
+    
+    
+    
+    cno = getCNO(email)
+    print(cno)
+    # rides(rno, price, rdate, seats, lugDesc, src, dst, driver, cno)
+    sql = "insert into rides values (?,?,?,?,?,?,?,?,?)"
+    cursor.execute(sql, (rno, price, date, seats, luggageDesc, src, dst, email, cno))    
+    return
+    
 
 def searchLogin(email, pwd):
     global connection, cursor
